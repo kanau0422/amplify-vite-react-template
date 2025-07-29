@@ -1,13 +1,195 @@
-<!doctype html>
-<html lang="en">
+  <!DOCTYPE html>
+  <html lang="ja">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <meta charset="UTF-8">
+    <title>座席管理システム</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 0;
+        padding: 0;
+        background: #f2f2f2;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+      }
+
+      .screen {
+        display: none;
+        text-align: center;
+        width: 100%;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      button {
+        margin: 10px;
+        padding: 15px 30px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+      }
+
+      #seat-map {
+        position: relative;
+        width: 500px;
+        margin: 20px auto;
+        border: 2px solid #ccc;
+        cursor: crosshair;
+      }
+
+      #seat-map img {
+        width: 100%;
+      }
+
+      #zoom-view {
+        position: fixed;
+        top: 10%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 800px;
+        background: white;
+        border: 2px solid #999;
+        padding: 20px;
+        z-index: 10;
+      }
+
+      .zoom-seat {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .popup {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: white;
+        border: 2px solid #ccc;
+        padding: 20px;
+        z-index: 1000;
+      }
+
+      .hidden {
+        display: none;
+      }
+
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+
+    <!-- ホーム画面 -->
+    <div id="homeScreen" class="screen active">
+      <h1>社員証をかざしてください</h1>
+      <button onclick="goToMenu()">社員証をかざしました</button>
+    </div>
+
+    <!-- メニュー画面 -->
+    <div id="menuScreen" class="screen">
+      <h1>メニュー</h1>
+      <button onclick="goToSeatSelection()">座席選択して着席</button>
+      <button onclick="alert('未実装です')">座席予約から着席</button>
+      <br>
+      <button onclick="goToHome()">ホームに戻る</button>
+    </div>
+
+    <!-- 座席選択画面 -->
+    <div id="seatSelectionScreen" class="screen">
+      <h2>座席マップから選択</h2>
+      <div id="seat-map" onclick="openZoom(event)">
+        <img src="officemap.jpg" alt="座席マップ">
+      </div>
+      <button onclick="goToHome()">ホームに戻る</button>
+    </div>
+
+    <!-- 拡大座席ビュー -->
+    <div id="zoom-view" class="hidden">
+      <h3>座席を選んでください</h3>
+      <div class="zoom-seat" id="zoom-seat-buttons">
+        <!-- JavaScriptでボタン生成 -->
+      </div>
+      <button onclick="closeZoom()">キャンセル</button>
+    </div>
+
+    <!-- 選択確認ポップアップ -->
+    <div id="popup" class="popup hidden">
+      <p id="popupText"></p>
+      <button onclick="confirmSelection()">はい</button>
+      <button onclick="closePopup()">いいえ</button>
+    </div>
+
+    <script>
+      let selectedSeat = "";
+
+      // 初期表示
+      window.onload = () => {
+        showScreen('homeScreen');
+      };
+
+      // 画面切り替え
+      function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+      }
+
+      function goToHome() {
+        showScreen('homeScreen');
+      }
+
+      function goToMenu() {
+        showScreen('menuScreen');
+      }
+
+      function goToSeatSelection() {
+        showScreen('seatSelectionScreen');
+      }
+
+      // 座席マップから拡大ビュー表示
+      function openZoom(event) {
+        const zoomView = document.getElementById('zoom-view');
+        const seatButtons = document.getElementById('zoom-seat-buttons');
+        seatButtons.innerHTML = '';
+
+        for (let i = 1; i <= 15; i++) {
+          const btn = document.createElement('button');
+          btn.innerText = `${i}番`;
+          btn.onclick = () => handleSeatClick(i);
+          seatButtons.appendChild(btn);
+        }
+
+        zoomView.classList.remove('hidden');
+      }
+
+      function closeZoom() {
+        document.getElementById('zoom-view').classList.add('hidden');
+      }
+
+      function handleSeatClick(seatNumber) {
+        selectedSeat = seatNumber;
+        document.getElementById('popupText').innerText = `${seatNumber}番でよろしいでしょうか？`;
+        document.getElementById('popup').classList.remove('hidden');
+      }
+
+      function confirmSelection() {
+        alert(`${selectedSeat}番を選択しました。着席完了です。`);
+        document.getElementById('popup').classList.add('hidden');
+        closeZoom();
+        goToHome();
+      }
+
+      function closePopup() {
+        document.getElementById('popup').classList.add('hidden');
+      }
+    </script>
+
   </body>
-</html>
+  </html>
+
