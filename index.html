@@ -100,7 +100,7 @@
   <div id="confirmationScreen" class="screen">
     <h2>予約完了</h2>
     <div id="confirmationMessage" class="confirmation"></div>
-    <button onclick="showScreen('loginScreen')">ホームに戻る</button>
+    <button onclick="showScreen('loginScreen'); callAPI()">ホームに戻る</button>
   </div>
 
   <script>
@@ -172,6 +172,29 @@
 
     function goToTimeInput() {
       showScreen("timeInputScreen");
+    }
+
+    async function callApi() {
+      const apiUrl = 'https://t8nyw8204c.execute-api.ap-northeast-1.amazonaws.com/test'; // ← あなたのAPIエンドポイントに変更
+
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST', // POSTにする場合は 'POST'
+          headers: {
+            'Content-Type': 'application/json'
+            // 認証が必要な場合はここに Authorization などを追加
+          }
+          // body: JSON.stringify({ key: "value" }) // POST の場合はこちら
+        });
+
+        const data = await response.json();
+        console.log('APIレスポンス:', data);
+
+        document.getElementById("result").innerText = JSON.stringify(data, null, 2);
+      } catch (error) {
+        console.error('API呼び出しエラー:', error);
+        document.getElementById("result").innerText = 'エラーが発生しました';
+      }
     }
 
      document.getElementById(id).classList.add('active');
