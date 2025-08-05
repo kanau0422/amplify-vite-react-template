@@ -185,10 +185,10 @@
         full: "終日"
       };
 
-      const message = `${selectedDate} の ${timeLabel[selectedTime]} に\n${seatNum}番の席を予約しました。`;
+      const message = `${date} の ${sta}から ${end} で\n${seatNum}番の席を予約しました。`;
       document.getElementById("confirmationMessage").innerText = message;
       
-      callApi();
+      postapi();
 
       showScreen("confirmationScreen");
     }
@@ -199,7 +199,7 @@
 
 
      //API
-    async function callApi() {
+    async function postapi() {
       const apiUrl = 'https://t8nyw8204c.execute-api.ap-northeast-1.amazonaws.com/test'; // ← あなたのAPIエンドポイントに変更
 
       try {
