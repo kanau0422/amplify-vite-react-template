@@ -75,18 +75,23 @@
     <input type="text" id="employeeId" autocomplete="off" placeholder="社員番号" />
     <input type="password" id="password" autocomplete="off" placeholder="パスワード" />
     <button onclick="login()">ログイン</button>
+    <button onclick="showScreen('reg')">新規登録</button>
   </div>
+
+  <div id = "reg" class="screen">
+    <h2>新規登録</h2>
+    <input type="text" id="name" autocomplete="off" placeholder="名前" />
+    <input type="text" id="id" autocomplete="off" placeholder="社員番号" />
+    <input type="password" id="pass" autocomplete="off" placeholder="パスワード" />
+    <button onclick="newreg()">登録</button>
+  </div>
+
 
   <!-- 2. 着席予定入力 -->
   <div id="timeInputScreen" class="screen">
     <h2>着席予定の入力</h2>
-    <input type="date" id="reserveDate" />
-    <select id="reserveTime">
-      <option value="">時間帯を選択</option>
-      <option value="morning">午前（9:00〜12:00）</option>
-      <option value="afternoon">午後（13:00〜17:00）</option>
-      <option value="full">終日（9:00〜17:00）</option>
-    </select>
+    <input type="date" id="reserveDate"autocomplete="off"/>
+    <input type="time" id="sta" autocomplete="off"/>から<input type="time" id="end"autocomplete="off"/>まで
     <button onclick="showAvailableSeats()">空席を表示</button>
   </div>    
 
@@ -100,7 +105,7 @@
   <div id="confirmationScreen" class="screen">
     <h2>予約完了</h2>
     <div id="confirmationMessage" class="confirmation"></div>
-    <button onclick="showScreen('loginScreen'); callApi()">ホームに戻る</button>
+    <button onclick="showScreen('loginScreen')">ホームに戻る</button>
   </div>
 
   <script>
@@ -115,6 +120,21 @@
         }
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
+    }
+
+    function newreg(){
+      const id = document.getElementById("id").value;
+      const pw = document.getElementById("pass").value;
+      const name = document.getElementById("name").value;
+
+      if (!id || !pw || !name) {
+        alert("名前と社員番号とパスワードを入力してください。");
+        return;
+      }else {
+
+        showScreen("loginScreen");
+      }
+
     }
 
     function login() {
@@ -135,10 +155,11 @@
     }
 
     function showAvailableSeats() {
-      selectedDate = document.getElementById("reserveDate").value;
-      selectedTime = document.getElementById("reserveTime").value;
+      date = document.getElementById("reserveDate").value;
+      sta = document.getElementById("sta").value;
+      end = document.getElementById("end").value;
 
-      if (!selectedDate || !selectedTime) {
+      if (!date || !sta || !end) {
         alert("日付と時間帯を選択してください。");
         return;
       }
@@ -166,6 +187,8 @@
 
       const message = `${selectedDate} の ${timeLabel[selectedTime]} に\n${seatNum}番の席を予約しました。`;
       document.getElementById("confirmationMessage").innerText = message;
+      
+      callApi();
 
       showScreen("confirmationScreen");
     }
@@ -174,6 +197,8 @@
       showScreen("timeInputScreen");
     }
 
+
+     //API
     async function callApi() {
       const apiUrl = 'https://t8nyw8204c.execute-api.ap-northeast-1.amazonaws.com/test'; // ← あなたのAPIエンドポイントに変更
 
@@ -196,6 +221,7 @@
         document.getElementById("result").innerText = 'エラーが発生しました';
       }
     }
+
 
      document.getElementById(id).classList.add('active');
 
